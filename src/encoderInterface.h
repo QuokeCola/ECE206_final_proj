@@ -2,25 +2,26 @@
 // Created by Qian Chen on 5/12/21.
 //
 
-#ifndef ECE_206_LAB_6_ROTENCODER_H
-#define ECE_206_LAB_6_ROTENCODER_H
+#ifndef ECE_206_LAB_6_ENCODERINTERFACE_H
+#define ECE_206_LAB_6_ENCODERINTERFACE_H
 
 #include "Arduino.h"
 
-class RotEncoder {
+class encoderInterface {
 public:
     /**
     * @brief initialize the interface
     * @param PIN_A_ port for A
     * @param PIN_B_ port for B
     * */
-    RotEncoder(int PINA_, int PINB_): PIN_A(PINA_), PIN_B(PINB_) {
+    encoderInterface(int PINA_, int PINB_): PIN_A(PINA_), PIN_B(PINB_) {
         pinMode(PIN_A, INPUT);
         pinMode(PIN_B, INPUT);
     }
 
     void update();
 
+    int getRotCount();
     int rotCount = 0;
 
 private:
@@ -32,4 +33,4 @@ private:
 };
 
 
-#endif //ECE_206_LAB_6_ROTENCODER_H
+#endif //ECE_206_LAB_6_ENCODERINTERFACE_H

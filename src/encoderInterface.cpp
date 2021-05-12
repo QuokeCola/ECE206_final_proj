@@ -2,9 +2,9 @@
 // Created by Qian Chen on 5/12/21.
 //
 
-#include "RotEncoder.h"
+#include "encoderInterface.h"
 
-void RotEncoder::update() {
+void encoderInterface::update() {
     /*** Rotation Detection ***/
     A[0] = A[1];
     B[0] = B[1];
@@ -20,10 +20,16 @@ void RotEncoder::update() {
         current_angle_raw --;
     }
     if(current_angle_raw > 4) {
-        rotCount++;
+        rotCount=1;
         current_angle_raw = 0;
     } else if (current_angle_raw < -4) {
-        rotCount--;
+        rotCount=-1;
         current_angle_raw = 0;
     }
+}
+
+int encoderInterface::getRotCount() {
+    int temp = rotCount;
+    rotCount = 0;
+    return temp;
 }

@@ -30,4 +30,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/pidController.cpp src/motorInterface.cpp src/RotEncoder.cpp src/RotEncoder.h src/Disp.cpp src/Disp.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/pidController.cpp src/motorInterface.cpp src/encoderInterface.cpp src/encoderInterface.h src/displayInterface.cpp src/displayInterface.h )
