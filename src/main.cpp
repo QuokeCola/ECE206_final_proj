@@ -10,18 +10,18 @@ const int pwmPinPos = 11;
 const int pwmPinNeg = 5;
 const int RECV_PIN = 12;
 
-float refRPM = 120.0f; // reference speed (Revolution Per Minute)
+float refRPM = 70.0f; // reference speed (Revolution Per Minute)
 float currRPM = 0; // current speed
 int currPWM = 0; // current PWM output
 
-const int loopTime = 100; // every 100 ms, the code enters update_speed()
+const int loopTime = 20; // every 100 ms, the code enters update_speed()
 int timePassed = 0;
 unsigned long prevMillis = 0; // last time (ms) the code entered update_speed()
 volatile long cnt = 0; // number of times Hall sensor passed the magnets
 
-float Kp = 2.5f;
-float Ki = 0.5f;
-float Kd = 1.0f;
+float Kp = 5.5f;
+float Ki = 1.05f;
+float Kd = 0.0f;
 float i_limit = 255.0f;
 int out_limit = 255.0f;
 
@@ -29,7 +29,7 @@ int disp_switch_interval = 10;
 long int disp_last_update_time;
 bool digit = false;
 pidController PIDController;
-motorInterface MotorInterface(A0, A1, pwmPinPos, pwmPinNeg, 100);
+motorInterface MotorInterface(A0, A1, pwmPinPos, pwmPinNeg, 10);
 encoderInterface EncoderInterface(A2, A3);
 displayInterface DisplayInterface;
 
@@ -70,7 +70,7 @@ void setup() {
     disp_last_update_time = millis();
     irrecv.enableIRIn();
     DisplayInterface.init();
-    Serial.begin(115200);
+    //Serial.begin(115200);
 }
 
 void loop() {
@@ -78,7 +78,7 @@ void loop() {
     MotorInterface.updateMotorFeedback();
     EncoderInterface.update();
     if(timePassed >= loopTime){
-        print_motor_info();
+        //print_motor_info();
         update_speed();
         //reset cnt and time
         cnt = 0;
@@ -88,10 +88,10 @@ void loop() {
     }
     if(disp_switch_interval< millis() - disp_last_update_time) {
         int num2show;
-        if(!digit) {
-            num2show = (int)abs(MotorInterface.velcoity) % 10;
+        if(digit) {
+            num2show = (int)abs(refRPM) % 10;
         } else {
-            num2show = (int)abs(MotorInterface.velcoity) / 10;
+            num2show = (int)abs(refRPM) / 10;
         }
         DisplayInterface.showNum(num2show, (int) digit);
         disp_last_update_time = millis();
@@ -99,24 +99,30 @@ void loop() {
     }
     if (irrecv.decode(&results))
     {
-        Serial.println("Recv");
-        Serial.println(results.value);
+        //Serial.println("Recv");
+        //Serial.println(results.value);
         if (results.value == POWER||results.value == 5316027)
         {
-            Serial.println("Stop");
+            //Serial.println("Stop");
             if(refRPM != 0) {
                 refRPM = 0.0f;
             }
         }
         else if (results.value == UP||results.value == 2538093563)
         {
-            Serial.println("UP");
+            //Serial.println("UP");
             refRPM = refRPM + 5.0f;
         }
         else if (results.value == DOWN||results.value == 1217346747)
         {
-            Serial.println("DOWN");
+            //Serial.println("DOWN");
             refRPM = refRPM - 5.0f;
+        }
+        else if (results.value == LEFT|| results.value == 2534850111) {
+            refRPM = -refRPM;
+        }
+        else if (results.value == RIGHT|| results.value == 1635910171) {
+            refRPM = -refRPM;
         }
         irrecv.resume();
     }
